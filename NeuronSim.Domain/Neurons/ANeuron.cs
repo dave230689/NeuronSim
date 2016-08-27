@@ -6,7 +6,6 @@ namespace NeuronSim.Domain.Neurons
     abstract public class ANeuron
     {
         protected Guid Id;
-        protected int ActivationThreshold;
         protected int EnergyBuffer;
 
         public Guid GetId()
@@ -14,22 +13,21 @@ namespace NeuronSim.Domain.Neurons
             return Id;
         }
 
-        public int GetActivationTreshhold()
-        {
-            return ActivationThreshold;
-        }
-
         public int GetEnergyBuffer()
         {
             return EnergyBuffer;
         }
 
-        abstract public void ConsumeSignals(ASignal message);
+        abstract public void ConsumeSignals();
 
         abstract public void IncreaseBufferEnergy(int messageEnergy);
 
         abstract public void DecreaseBufferEnergy(int messageEnergy);
 
+        abstract public void ConsumeEnergy();
+
         abstract public void SendSignal(ASignal signal);
+
+        abstract public bool IsBufferEnergyEnoughForPropagation(int numberOfConnectedNeurons);
     }
 }

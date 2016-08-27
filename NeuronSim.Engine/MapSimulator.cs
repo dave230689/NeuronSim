@@ -28,24 +28,35 @@ namespace NeuronSim.Engine
 
         public void Start()
         {
-            foreach (var neuron in NeuronsUnderSimulation)
+            while (true)
             {
                 SignalGenerator.GenerateSignals();
-                ElaborationPhase();
-                PropagationPhase();
+                foreach (var neuron in NeuronsUnderSimulation)
+                {
+                    ElaborationPhase(neuron);
+                    PropagationPhase(neuron);
+                }
 
                 Thread.Sleep(SimulationStepInterval);
-            }    
+            }
         }
 
         private void ElaborationPhase(ANeuron neuron)
         {
-            neuro.n
+            neuron.ConsumeSignals();
+            neuron.ConsumeEnergy();
         }
 
         private void PropagationPhase(ANeuron neuron)
         {
-            throw new NotImplementedException();
+            var connectedNeurons = NeuroMap.GetConnectedNeurons(neuron);
+            if (neuron.IsBufferEnergyEnoughForPropagation(connectedNeurons.Count))
+            {
+                foreach (var connectedNeuron in connectedNeurons)
+                {
+                    NeuroMap.AddNeuron(connectedNeuron);
+                }
+            }
         }
 
         public void Pause()
@@ -64,7 +75,7 @@ namespace NeuronSim.Engine
             var result = new List<ANeuron>();
             Random rnd = new Random();
 
-            while(neuronsExtracted < numberOfNeuronsToExtract)
+            while (neuronsExtracted < numberOfNeuronsToExtract)
             {
                 result.Add(neurons.ToArray()[rnd.Next(neurons.Count)]);
                 neuronsExtracted++;

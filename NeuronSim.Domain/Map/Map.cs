@@ -55,6 +55,20 @@ namespace NeuronSim.Domain.Map
 
             return false;
         }
+        
+        public List<ANeuron> GetConnectedNeurons(ANeuron neuron)
+        {
+            var result = new List<ANeuron>();
+            foreach(var connection in _connections)
+            {
+                if (connection.GetStartNeuron().Equals(neuron))
+                {
+                    result.Add(connection.GetEndNeuron());
+                }
+            }
+
+            return result;
+        }
 
         public void PrintToConsole()
         {

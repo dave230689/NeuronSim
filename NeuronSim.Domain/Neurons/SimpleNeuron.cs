@@ -7,13 +7,15 @@ namespace NeuronSim.Domain.Neurons
     public class SimpleNeuron : ANeuron
     {
         private List<ASignal> SignalsQueue = new List<ASignal>();
+        private const int NeuronEnergyConsumption = 1;
+        private const int PropagationThreshold = 5;
 
         public SimpleNeuron()
         {
             Id = Guid.NewGuid();
         }
 
-        public override void ConsumeSignals(ASignal message)
+        public override void ConsumeSignals()
         {
             foreach(var signal in SignalsQueue)
             {
@@ -38,6 +40,16 @@ namespace NeuronSim.Domain.Neurons
         public override void SendSignal(ASignal signal)
         {
             SignalsQueue.Add(signal);
+        }
+
+        public override void ConsumeEnergy()
+        {
+            DecreaseBufferEnergy(NeuronEnergyConsumption);
+        }
+
+        public override bool IsBufferEnergyEnoughForPropagation(int numberOfConnectedNeurons)
+        {
+            return (EnergyBuffer >= PropagationThreshold && EnergyBuffer >= numberOfConnectedNeurons) ? true : false;
         }
     }
 }
