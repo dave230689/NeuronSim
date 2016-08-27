@@ -56,7 +56,6 @@ namespace NeuronSim.Domain.Map
             return false;
         }
 
-        //Visualizzazione in console
         public void PrintToConsole()
         {
             Console.WriteLine("**** NeuronSIM - Map Visualization ****\n\n");
