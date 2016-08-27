@@ -4,6 +4,11 @@ namespace NeuronSim.Domain.Messages
 {
     public class SimpleSignal : ASignal
     {
-        DateTime SignalCreationDate { get; set; }
+        private DateTime SignalCreationDate { get; set; }
+
+        public SimpleSignal(int energy) : base(energy)
+        {
+            SignalCreationDate = DateTime.Now;
+        }
     }
 }

@@ -7,6 +7,12 @@ namespace NeuronSim.Domain.Messages
         protected Guid Id;
         protected int Energy;
 
+        public ASignal(int energy)
+        {
+            Id = Guid.NewGuid();
+            Energy = energy;    
+        }
+
         public Guid GetId()
         {
             return Id;
