@@ -24,10 +24,12 @@ namespace NeuronSim.Domain.Neurons
             return EnergyBuffer;
         }
 
-        abstract public void ConsumeMessage(ASignal message);
+        abstract public void ConsumeSignals(ASignal message);
 
         abstract public void IncreaseBufferEnergy(int messageEnergy);
 
         abstract public void DecreaseBufferEnergy(int messageEnergy);
+
+        abstract public void SendSignal(ASignal signal);
     }
 }

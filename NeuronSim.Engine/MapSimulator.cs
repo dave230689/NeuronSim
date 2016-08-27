@@ -31,9 +31,21 @@ namespace NeuronSim.Engine
             foreach (var neuron in NeuronsUnderSimulation)
             {
                 SignalGenerator.GenerateSignals();
+                ElaborationPhase();
+                PropagationPhase();
 
                 Thread.Sleep(SimulationStepInterval);
             }    
+        }
+
+        private void ElaborationPhase(ANeuron neuron)
+        {
+            neuro.n
+        }
+
+        private void PropagationPhase(ANeuron neuron)
+        {
+            throw new NotImplementedException();
         }
 
         public void Pause()
