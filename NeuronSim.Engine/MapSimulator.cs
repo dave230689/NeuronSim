@@ -1,4 +1,5 @@
 ﻿using NeuronSim.Domain.Map;
+using NeuronSim.Domain.Messages;
 using NeuronSim.Domain.Neurons;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,8 @@ namespace NeuronSim.Engine
     public class MapSimulator
     {
         private const int SimulationStepInterval = 1000;
+        private int SimulationStep = 0;
+        private bool RunSimulation = false;
         private Map NeuroMap;
         private SignalGenerator SignalGenerator;
         private List<ANeuron> NeuronsUnderSimulation;
@@ -17,6 +20,8 @@ namespace NeuronSim.Engine
         public MapSimulator(Map neuroMap)
         {
             NeuroMap = neuroMap;
+            NeuronsUnderSimulation = new List<ANeuron>();
+            NeuronsGeneratingSignals = new List<ANeuron>();
         }
 
         public void Init()
@@ -24,17 +29,42 @@ namespace NeuronSim.Engine
             NeuronsGeneratingSignals = ExtractNeurons(3, NeuroMap.GetNeurons());
             NeuronsUnderSimulation.AddRange(NeuronsGeneratingSignals);
             SignalGenerator = new SignalGenerator(NeuronsGeneratingSignals);
+            SimulationStep = 0;
         }
 
         public void Start()
         {
-            while (true)
+            RunSimulation = true;
+            var neuronsToAdd = new List<ANeuron>();
+
+            while (RunSimulation)
             {
                 SignalGenerator.GenerateSignals();
                 foreach (var neuron in NeuronsUnderSimulation)
                 {
                     ElaborationPhase(neuron);
-                    PropagationPhase(neuron);
+                    neuronsToAdd = PropagationPhase(neuron);
+                }
+
+                foreach (var newNeuron in neuronsToAdd)
+                {
+                    if (!NeuronsUnderSimulation.Contains(newNeuron))
+                    {
+                        NeuronsUnderSimulation.Add(newNeuron);
+                    }
+                }
+
+                Console.Clear();
+                Console.WriteLine($"PROCESSING STEP {SimulationStep++}");
+                foreach(var neuron in NeuronsUnderSimulation)
+                {
+                    var actualEnergyBuffer = string.Empty;
+                    for(int i=0; i<neuron.GetEnergyBuffer(); i++)
+                    {
+                        actualEnergyBuffer += "|";
+                    }
+
+                    Console.WriteLine($"Neuron {neuron.GetId()}: {actualEnergyBuffer}");
                 }
 
                 Thread.Sleep(SimulationStepInterval);
@@ -47,26 +77,33 @@ namespace NeuronSim.Engine
             neuron.ConsumeEnergy();
         }
 
-        private void PropagationPhase(ANeuron neuron)
+        private List<ANeuron> PropagationPhase(ANeuron neuron)
         {
+            var result = new List<ANeuron>();
             var connectedNeurons = NeuroMap.GetConnectedNeurons(neuron);
             if (neuron.IsBufferEnergyEnoughForPropagation(connectedNeurons.Count))
             {
                 foreach (var connectedNeuron in connectedNeurons)
                 {
-                    NeuroMap.AddNeuron(connectedNeuron);
+                    connectedNeuron.SendSignal(new SimpleSignal(1));
+                    result.Add(connectedNeuron);
                 }
             }
+
+            return result;
         }
 
         public void Pause()
         {
-
+            RunSimulation = false;
         }
 
         public void Stop()
         {
-
+            RunSimulation = false;
+            NeuronsUnderSimulation.Clear();
+            NeuronsGeneratingSignals.Clear();
+            SignalGenerator = null;
         }
 
         private List<ANeuron> ExtractNeurons(int numberOfNeuronsToExtract, List<ANeuron> neurons)

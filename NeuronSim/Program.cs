@@ -14,7 +14,7 @@ namespace NeuronSim
             mapSimulator.Init();
             mapSimulator.Start();
 
-            map.PrintToConsole();
+            //map.PrintToConsole();
         }
     }
 }
